@@ -7,9 +7,20 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use JWTAuth;
 
 class ApiController extends Controller
 {
+    /**
+     * Create a new AuthController instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('jwt', ['except' => ['new']]);
+    }
+
     public function new(Request $request)
     {
         $validator = $this->validation_request($request);
@@ -36,14 +47,49 @@ class ApiController extends Controller
                 ];
 
                 $response = (GuzzleHttpRequest::GuzzleHttpRequest(env('MOCKAPI_URL'), "POST", $data)) ?
-                    ["ok" => true, "message" => "User saved successfully."] :
-                    ["ok" => false, "message" => "Failed to save user"];
+                    ["message" => "User saved successfully."] :
+                    ["message" => "Failed to save user"];
             } else {
 
-                $response = ["ok" => false, "message" => "Failed to save user"];
+                $response = ["message" => "Failed to save user"];
             }
         }
         return response()->json($response);
+    }
+
+    /**
+     * Get the authenticated User.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function me()
+    {
+        $user = JWTAuth::user();
+
+        if ($user) {
+
+            $data = GuzzleHttpRequest::GuzzleHttpRequest(env('MOCKAPI_URL') . "/{$user->id}", "GET", []);
+            $response = ($data) ? $data :
+                ["message" => "User information not found."];
+        } else {
+            $response = ["message" => "User not found."];
+        }
+
+        return response()->json($response);
+    }
+
+    public function update_me()
+    {
+        $user = JWTAuth::user();
+
+        return response()->json(["ok" => true, "update" => true]);
+    }
+
+    public function delete_me()
+    {
+        $user = JWTAuth::user();
+
+        return response()->json(["ok" => true, "delete" => true]);
     }
 
 
