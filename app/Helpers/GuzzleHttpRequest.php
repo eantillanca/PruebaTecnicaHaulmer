@@ -17,4 +17,17 @@ class GuzzleHttpRequest
         }
         return $response;
     }
+
+    static function GetMockapiData()
+    {
+        try {
+            $client             = new \GuzzleHttp\Client();
+            $clientResponse     = $client->request("GET", env("MOCKAPI_URL"), ['json' => []]);
+            $response = json_decode($clientResponse->getBody()->getContents())[0];
+            $response = collect($response);
+        } catch (Exception $e) {
+            $response = $e->getMessage();
+        }
+        return $response;
+    }
 }
