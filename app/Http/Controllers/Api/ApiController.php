@@ -32,6 +32,10 @@ class ApiController extends Controller
             $response = ["messages" => $validator->messages()];
         } else {
 
+            if (User::where('email', $request->email)->first()) {
+                return response()->json(["message" => "The email has already been taken."]);
+            }
+
             $user = new User;
             $user->name = $request->name;
             $user->email = $request->email;
@@ -94,6 +98,10 @@ class ApiController extends Controller
             return response()->json(["message" => "User not found."]);
         }
 
+        if (User::where('email', $request->email)->where("id", '!=', $user_id)->first()) {
+            return response()->json(["message" => "The email has already been taken."]);
+        }
+
         $validator = $this->validation_request($request);
 
         if ($validator->fails()) {
@@ -151,7 +159,7 @@ class ApiController extends Controller
     private function validation_request($request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email',
             'name' => 'required|string|max:50',
             'password' => 'required',
             'phone' => 'required|numeric',
