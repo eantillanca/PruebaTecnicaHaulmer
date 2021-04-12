@@ -1,31 +1,35 @@
 # PruebaTecnicaHaulmer
 API REST para CRUD de usuarios con autenticación mediante JWT
 
-INSTALACIÓN 
+## INSTALACIÓN 
 
 Una vez clonado el respositorio y estando en su directorio, ejecutar los comandos:
 
+~~~~
 composer install 
 cp .env.example .env 
 php artisan key:generate
 php artisan jwt:secret
 docker-compose up
+~~~~
 
 Una vez el contenedor docker este creado abrir una nueva terminar en el directorio del proyecto y ejecutar los siguientes comandos: 
 
+~~~~
 docker exec -ti mysql bash
 mysql -u root -p -e "create database if not exists <nombre-db>"
 
 (contraseña por defecto configurada en docker-compose.yml: 123456)
 
 exit
+~~~~
 
 
-
-VARIABLES DE ENTORNO 
+## VARIABLES DE ENTORNO 
 
 en archivo .env agregar: 
 
+~~~~
 DB_CONNECTION=mysql
 DB_HOST=mysql
 DB_PORT=3306
@@ -34,15 +38,18 @@ DB_USERNAME=root
 DB_PASSWORD=123456
 
 MOCKAPI_URL=https://607096da85c3f000174707a9.mockapi.io/api/v1/users
+~~~~
 
 finalmente con la base de datos creada y conectada al proyecto ejecutar las migraciones con el comando: 
 
+~~~~
 docker exec -ti sk2020-container php artisan migrate
+~~~~
 
 
 
 
-SUPUESTOS
+## SUPUESTOS
 
 - Docker ya debería estar instalado y corriendo en el equipo anfitrión. 
 - Se asume que al utilzar JWT para el login, existe una base de datos de usuarios, 
